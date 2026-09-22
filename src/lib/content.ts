@@ -2,21 +2,24 @@ import { validatePostMeta, sortPosts, type PostMeta } from './posts'
 
 // Auto-discover every MDX post; slug = filename. New posts added via the
 // CMS (/admin) or by hand need no registration — they're picked up at build.
-const modules = import.meta.glob<{ default: React.ComponentType; frontmatter?: Record<string, unknown> }>(
-  '~/content/blog/*.mdx',
-  { eager: true },
-)
+// Glob keys are importer-relative (e.g. "../content/blog/<slug>.mdx"), so
+// components are looked up by basename, never by a reconstructed key.
+const modules = import.meta.glob<{
+  default: React.ComponentType
+  frontmatter?: Record<string, unknown>
+}>('~/content/blog/*.mdx', { eager: true })
 
 export type { PostMeta }
+
+function slugOf(path: string): string {
+  return path.replace(/^.*\/(.+)\.mdx$/, '$1')
+}
 
 function buildIndex(): PostMeta[] {
   const posts: PostMeta[] = []
 
   for (const [path, mod] of Object.entries(modules)) {
-    const slug = path.replace(/^.*\/(.+)\.mdx$/, '$1')
-    const fm = (mod.frontmatter ?? {}) as Partial<PostMeta>
-
-    posts.push(validatePostMeta({ ...fm, slug }, slug))
+    posts.push(validatePostMeta({ ...(mod.frontmatter ?? {}), slug: slugOf(path) } as Partial<PostMeta>, slugOf(path)))
   }
 
   return posts
@@ -33,7 +36,8 @@ export function getPostBySlug(slug: string): PostMeta | undefined {
 }
 
 export function getPostComponent(slug: string): React.ComponentType | undefined {
-  return modules[`~/content/blog/${slug}.mdx`]?.default
+  const entry = Object.entries(modules).find(([path]) => slugOf(path) === slug)
+  return entry?.[1].default
 }
 
 export function estimateReadingTime(html: string): number {
