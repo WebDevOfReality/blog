@@ -65,7 +65,7 @@ export function validateAiDisclosure(meta: PostFrontmatter, slug: string): void 
   }
 }
 
-export function validatePostMeta(meta: Partial<PostFrontmatter>, slug: string): PostMeta {
+export function validatePostMeta(meta: Partial<PostFrontmatter> & { slug?: string }, slug: string): PostMeta {
   if (!meta.title) throw new Error(`[${slug}] missing required frontmatter field: title`)
   if (!meta.description) throw new Error(`[${slug}] missing required frontmatter field: description`)
   if (!meta.date) throw new Error(`[${slug}] missing required frontmatter field: date`)

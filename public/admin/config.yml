@@ -1,0 +1,95 @@
+# yaml-language-server: $schema=https://unpkg.com/@sveltia/cms/schema/sveltia-cms.json
+
+# WebDev of Reality content admin — Sveltia CMS
+# Auth: Netlify OAuth (GitHub provider configured in Netlify site settings).
+# Commits go directly to main; every push triggers a Netlify deploy.
+#
+# AI ethics directives: see AGENTS.md at repo root and src/content/AGENTS.md.
+# The build-time validator (src/lib/posts.ts) rejects unsigned AI content and
+# the forbidden 'ai-generated' scope regardless of what is entered here.
+
+backend:
+  name: github
+  repo: WebDevOfReality/blog
+  branch: main
+
+media_folder: public/images/posts
+public_folder: /images/posts
+
+collections:
+  - name: posts
+    label: Posts
+    label_singular: Post
+    folder: src/content/blog
+    extension: mdx
+    format: yaml-frontmatter
+    slug: '{{slug}}'
+    create: true
+    editor:
+      preview: false
+    summary: '{{title}} — {{aiScope}}'
+    fields:
+      - label: Title
+        name: title
+        widget: string
+      - label: Description
+        name: description
+        widget: text
+        hint: Used for SEO meta tags and blog cards. One or two sentences.
+      - label: Publish date
+        name: date
+        widget: datetime
+        format: YYYY-MM-DD
+        date_format: YYYY-MM-DD
+        time_format: false
+      - label: Author
+        name: author
+        widget: string
+        default: Anthony
+      - label: Tags
+        name: tags
+        widget: list
+        required: false
+        add_label: Add tag
+      - label: Featured
+        name: featured
+        widget: boolean
+        default: false
+        required: false
+        hint: Surface on the homepage as a featured post.
+      - label: Draft
+        name: draft
+        widget: boolean
+        default: false
+        required: false
+        hint: Hidden from all listings but still builds.
+      - label: YouTube video ID
+        name: videoId
+        widget: string
+        required: false
+        hint: For posts accompanying a video (embeds via VideoEmbed component).
+      - label: AI assisted
+        name: aiAssisted
+        widget: boolean
+        default: false
+        required: false
+        hint: 'OFF = human written: leave the fields below empty. ON = must sign (see /ai-policy).'
+      - label: AI model
+        name: aiModel
+        widget: string
+        required: false
+        hint: 'Required when AI assisted. Example: GLM (glm-5.3-flash) by Z.ai'
+      - label: AI scope
+        name: aiScope
+        widget: select
+        required: false
+        hint: 'Required when AI assisted.'
+        options:
+          - { label: 'AI assisted (human authored, AI helped)', value: ai-assisted }
+          - label: 'Generated with AI from human source (transcript etc.)'
+            value: ai-generated-from-human-source
+        # Note: the fully AI-authored scope is intentionally absent —
+        # it is forbidden by the AI ethics directive and must never ship.
+      - label: Body
+        name: body
+        widget: markdown

@@ -1,17 +1,25 @@
 import { validatePostMeta, sortPosts, type PostMeta } from './posts'
 
-import welcome from '~/content/blog/welcome.mdx'
-import welcomeMeta from '~/content/blog/welcome.meta'
-
-const postComponents: Record<string, React.ComponentType> = {
-  welcome,
-}
+// Auto-discover every MDX post; slug = filename. New posts added via the
+// CMS (/admin) or by hand need no registration — they're picked up at build.
+const modules = import.meta.glob<{ default: React.ComponentType; frontmatter?: Record<string, unknown> }>(
+  '~/content/blog/*.mdx',
+  { eager: true },
+)
 
 export type { PostMeta }
 
 function buildIndex(): PostMeta[] {
-  const raw = [welcomeMeta] as Partial<PostMeta>[]
-  return raw.map((meta) => validatePostMeta(meta, meta.slug ?? 'unknown'))
+  const posts: PostMeta[] = []
+
+  for (const [path, mod] of Object.entries(modules)) {
+    const slug = path.replace(/^.*\/(.+)\.mdx$/, '$1')
+    const fm = (mod.frontmatter ?? {}) as Partial<PostMeta>
+
+    posts.push(validatePostMeta({ ...fm, slug }, slug))
+  }
+
+  return posts
 }
 
 export const postIndex: PostMeta[] = buildIndex()
@@ -25,7 +33,7 @@ export function getPostBySlug(slug: string): PostMeta | undefined {
 }
 
 export function getPostComponent(slug: string): React.ComponentType | undefined {
-  return postComponents[slug]
+  return modules[`~/content/blog/${slug}.mdx`]?.default
 }
 
 export function estimateReadingTime(html: string): number {

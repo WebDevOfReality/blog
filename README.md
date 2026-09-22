@@ -26,12 +26,26 @@ npm run typecheck  # tsc --noEmit
 
 ## Writing a post
 
-1. Create `src/content/blog/<slug>.mdx` with full frontmatter
-2. Create `src/content/blog/<slug>.meta.ts` (see `welcome.meta.ts`)
-3. Register both in `src/lib/content.ts`
-4. `npm run build` — the AI disclosure validator must pass
+Posts are auto-discovered: drop a `.mdx` file in `src/content/blog/` (slug =
+filename) — no registration needed. Frontmatter is the single source of truth.
+
+Two ways:
+
+- **CMS:** visit `/admin/` (Sveltia CMS, commits to `main` via Netlify
+  OAuth). Unlisted and `noindex`.
+- **By hand:** create the file, run `npm run build` — the AI disclosure
+  validator must pass.
 
 Frontmatter schema and voice guidelines: `src/content/AGENTS.md`.
+
+### CMS auth (Netlify OAuth) — one-time setup
+
+1. GitHub → Settings → Developer settings → OAuth Apps → **New OAuth App**
+   - Homepage: your site URL
+   - Callback URL: `https://api.netlify.com/auth/done`
+2. Netlify → Site configuration → **Access & security → OAuth** → install
+   the GitHub provider using the app's Client ID + Client Secret
+3. Log in at `/admin/` with "Log in with Netlify"
 
 ## AI transparency
 

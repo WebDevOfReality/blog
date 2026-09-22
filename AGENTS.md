@@ -68,10 +68,15 @@ violates these rules fails the build — by design.
 - **MDX pipeline:** `remark-gfm`, `remark-frontmatter`, `remark-mdx-frontmatter`
   are configured in `vite.config.ts`. Never remove them — GFM tables and
   frontmatter parsing are load-bearing (learned the hard way on the docs site).
-- **New posts:** add the `.mdx` file in `src/content/blog/`, then register the
-  component and metadata in `src/lib/content.ts` (posts are statically
-  imported; frontmatter lives in a sibling `.meta.ts` file — see
-  `welcome.meta.ts`). Include complete, honest AI disclosure fields.
+- **New posts:** add a `.mdx` file in `src/content/blog/` with complete,
+  honest AI disclosure fields. Posts are auto-discovered via
+  `import.meta.glob` (slug = filename) — there is no registration step.
+  Frontmatter in the MDX file is the single source of truth; do not create
+  sibling `.meta.ts` files.
+- **CMS:** `/admin/` (public/admin/) runs Sveltia CMS, committing straight to
+  `main` via Netlify OAuth. Its collection schema mirrors the frontmatter
+  schema; `aiScope` there only offers the two allowed values. Do not loosen
+  the CMS config to add forbidden scopes.
 - **Content pipeline is the enforcement layer:** `validateAiDisclosure` throws
   on missing/forbidden AI metadata. Do not weaken, bypass, or remove it. If a
   legitimate need conflicts with it, stop and ask Anthony.

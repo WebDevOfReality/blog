@@ -44,11 +44,16 @@ aiScope: ai-assisted | ai-generated-from-human-source  # required when aiAssiste
 
 ## Adding a post
 
-1. Create `src/content/blog/<slug>.mdx` with complete frontmatter.
-2. Create `src/content/blog/<slug>.meta.ts` exporting the typed metadata object
-   (see `welcome.meta.ts` as the canonical example).
-3. Register both in `src/lib/content.ts` (`postComponents` + the meta list).
-4. Run `npm run build` — the disclosure validator must pass.
+Posts are auto-discovered: any `.mdx` file in this directory is picked up at
+build time (slug = filename). No registration, no sibling meta files.
+
+Two ways to publish:
+
+1. **CMS (recommended for writing):** `/admin/` — Sveltia CMS commits
+   `src/content/blog/<slug>.mdx` directly to `main`; Netlify deploys on
+   push. The editor form enforces the frontmatter schema below.
+2. **By hand:** create `src/content/blog/<slug>.mdx` with complete
+   frontmatter, then `npm run build` — the disclosure validator must pass.
 
 ## Honesty standard
 
