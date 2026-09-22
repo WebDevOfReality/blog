@@ -1,0 +1,146 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * WebDev of Reality — Spider-Verse brand palette
+ * spider-purple  #6B2D91   headings, primary accents
+ * electric-red   #E63946   CTAs, links
+ * void-black     #0A0A0F   backgrounds (dark default)
+ * neon-blue      #00D4FF   links/accents
+ * glitch-pink    #FF6B9D   hover states
+ * deep-purple    #1A0F2E   alt backgrounds
+ */
+@theme {
+  --color-spider-purple: #6B2D91;
+  --color-electric-red: #E63946;
+  --color-void-black: #0A0A0F;
+  --color-neon-blue: #00D4FF;
+  --color-glitch-pink: #FF6B9D;
+  --color-deep-purple: #1A0F2E;
+  --color-light-gray: #E5E5E5;
+  --color-medium-gray: #6B6B6B;
+  --color-dark-gray: #1C1C1C;
+
+  --font-heading: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --animate-glitch: glitch 0.3s ease-in-out infinite;
+
+  @keyframes glitch {
+    0% { transform: translate(0); }
+    20% { transform: translate(-2px, 2px); }
+    40% { transform: translate(-2px, -2px); }
+    60% { transform: translate(2px, 2px); }
+    80% { transform: translate(2px, -2px); }
+    100% { transform: translate(0); }
+  }
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  .dark {
+    color-scheme: dark;
+  }
+
+  html {
+    font-family: var(--font-body);
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-white text-dark-gray antialiased;
+  }
+
+  .dark body {
+    @apply bg-void-black text-light-gray;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+  }
+}
+
+@layer components {
+  .container-site {
+    @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .brand-gradient-text {
+    @apply bg-gradient-to-r from-spider-purple to-electric-red bg-clip-text text-transparent;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-electric-red px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-glitch-pink;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-spider-purple/40 px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:border-spider-purple hover:bg-spider-purple/10;
+  }
+}
+
+/* Prose overrides for MDX content — brand-tinted typography */
+.prose-wdr {
+  @apply prose prose-neutral max-w-none dark:prose-invert;
+}
+
+.prose-wdr {
+  --tw-prose-links: theme(colors.neon-blue);
+
+  a {
+    @apply underline decoration-neon-blue/50 underline-offset-4 hover:decoration-neon-blue;
+  }
+
+  strong {
+    @apply text-foreground font-semibold;
+  }
+
+  table {
+    @apply w-full border-collapse text-sm;
+  }
+
+  th, td {
+    @apply border border-neutral-300 px-4 py-2 text-left dark:border-neutral-700;
+  }
+
+  th {
+    @apply bg-neutral-100 font-semibold dark:bg-deep-purple;
+  }
+
+  thead {
+    @apply dark:[&>tr]:border-b dark:[&>tr]:border-spider-purple/40;
+  }
+
+  code {
+    font-family: var(--font-mono);
+  }
+
+  pre {
+    font-family: var(--font-mono);
+  }
+}
+
+@utility text-foreground {
+  color: var(--color-light-gray);
+}
+
+.dark .prose-wdr {
+  --tw-prose-body: theme(colors.light-gray);
+  --tw-prose-bold: theme(colors.light-gray);
+  --tw-prose-counters: theme(colors.medium-gray);
+  --tw-prose-bullets: theme(colors.medium-gray);
+  --tw-prose-hr: theme(colors.dark-gray);
+  --tw-prose-quotes: theme(colors.light-gray);
+  --tw-prose-quote-borders: theme(colors.spider-purple);
+  --tw-prose-captions: theme(colors.medium-gray);
+  --tw-prose-code: theme(colors.light-gray);
+  --tw-prose-pre-code: theme(colors.light-gray);
+  --tw-prose-pre-bg: theme(colors.dark-gray);
+  --tw-prose-th-borders: theme(colors.dark-gray);
+  --tw-prose-td-borders: theme(colors.dark-gray);
+}
