@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: umami-postgres
+  namespace: analytics
+  labels:
+    app: umami-postgres
+spec:
+  serviceName: umami-postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app: umami-postgres
+  template:
+    metadata:
+      labels:
+        app: umami-postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:16-alpine
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_DB
+          value: umami
+        - name: POSTGRES_USER
+          value: umami
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: umami-secrets
+              key: postgres-password
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/postgresql/data
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: local-path
+      resources:
+        requests:
+          storage: 5Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: umami-postgres
+  namespace: analytics
+spec:
+  selector:
+    app: umami-postgres
+  ports:
+  - port: 5432
+    targetPort: 5432

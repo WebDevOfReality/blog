@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: umami
+  namespace: analytics
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoint: websecure
+spec:
+  rules:
+  - host: umami.heim
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: umami
+            port:
+              number: 80
+  # Public analytics for the blog (webdevofreality.dev visitors) requires
+  # public reachability — see README note in this folder before applying
+  # an analytics.webdevofreality.dev host rule.
